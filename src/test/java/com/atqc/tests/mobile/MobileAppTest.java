@@ -1,16 +1,24 @@
 package com.atqc.tests.mobile;
 
 import com.atqc.tests.BaseTest;
+import framework.PlatformFactory;
 import framework.Utilities;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.touch.offset.PointOption;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
+import pages.TabsPageMobile;
 import pages.mobile.*;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MobileAppTest extends BaseTest {
@@ -24,6 +32,14 @@ public class MobileAppTest extends BaseTest {
     MenuPageMobile menuPageMobile;
     InflateXMLPageMobile inflateXmlPage;
     HideShowPageMobile hideShowPage;
+    ViewsPageMobile viewsPageMobile;
+    ChronometerPageMobile chronometerPage;
+    HoloThemePageMobile holoThemePage;
+    AnimationPageMobile animationPage;
+    AnimationMenuPageMobile animationPageMenu;
+    TabsPageMobile tabsPage;
+    ContentByIntentPageMobile contentByIntentPage;
+
 
     @Test
     public void testForAlarmController(){
@@ -100,7 +116,71 @@ public class MobileAppTest extends BaseTest {
 
     @Test
     public void chronometerTest(){
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        chronometerPage = viewsPageMobile.clickChronometerElement();
 
+        assertThat(chronometerPage.chronometerTime(), equalTo("Initial format: 00:00"));
+        chronometerPage.clickSetFormat();
+        chronometerPage.clickStartButton();
+        chronometerPage.clickStopButton();
+        assertThat(chronometerPage.chronometerTime(), containsString("Formatted time"));
+        chronometerPage.clickClearFormatButton();
+        chronometerPage.clickStartButton();
+        chronometerPage.clickStopButton();
+        assertThat(chronometerPage.chronometerTime(), not(containsString("Formatted time")));
+        chronometerPage.clickResetFormat();
+        assertThat(chronometerPage.chronometerTime(),is("00:00"));
+    }
+
+    @Test
+    public void holoThemeTest(){
+
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        holoThemePage = viewsPageMobile.clickControlsElement();
+
+        holoThemePage.themesList.get(5).click();
+        assertThat(holoThemePage.themeTitle.getText(), containsString("Holo"));
+
+    }
+
+    @Test
+    public void animationTest(){
+
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        Utilities.scrollUp();
+        animationPageMenu = viewsPageMobile.clickLayoutElement();
+        animationPage = animationPageMenu.clickGridElement();
+
+        WebDriverWait wait = new WebDriverWait(PlatformFactory.getDriver(), 10);
+
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(MobileBy.className("android.widget.ImageView")));
+
+        assertThat(animationPage.gridElements, is(notNullValue()));
+
+    }
+
+    @Test
+    public void contentByIntentTest(){
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        Utilities.scrollUp();
+        Utilities.scrollUp();
+        Utilities.scrollUp();
+        tabsPage = viewsPageMobile.clickTabsElement();
+        contentByIntentPage = tabsPage.clickContentByIntent();
+
+        contentByIntentPage.screenTabs.get(2).click();
+        assertThat(contentByIntentPage.listElements.get(0), is(notNullValue()));
+        contentByIntentPage.screenTabs.get(3).click();
+
+        contentByIntentPage.newPhotoButton.click();
+        assertThat(contentByIntentPage.addedPhotoElement, is(notNullValue()));
+        contentByIntentPage.clearPhotoButton.click();
+        assertThat(contentByIntentPage.noPhotosElement, is(notNullValue()));
+    }
+
+    @Test
+    public void pickerTest(){
+        
     }
 }
 
