@@ -22,6 +22,53 @@ public class ViewsPageMobile extends BasePageMobile {
     @AndroidFindBy(accessibility = "3. Content By Intent")
     MobileElement contentByIntent;
 
+    @AndroidFindBy(accessibility = "Picker")
+    MobileElement pickerElement;
+
+    @AndroidFindBy(accessibility = "Popup Menu")
+    MobileElement popupMenuElement;
+
+    @AndroidFindBy(accessibility = "Radio Group")
+    MobileElement radioGroupElement;
+
+    @AndroidFindBy(accessibility = "Rotating Button")
+    MobileElement rotatingButtonElement;
+
+    @AndroidFindBy(accessibility = "TextClock")
+    MobileElement textClockElement;
+
+    @AndroidFindBy(accessibility = "Date Widgets")
+    MobileElement dateWidgetsElement;
+
+    public DateWidgetPageMobile clickDateWidgetsPage() {
+        dateWidgetsElement.click();
+        return new DateWidgetPageMobile();
+    }
+
+    public TextClockPageMobile clickTextClockElement() {
+        textClockElement.click();
+        return new TextClockPageMobile();
+    }
+
+    public RotatingButtonPageMobile clickRotatingButtonElement() {
+        rotatingButtonElement.click();
+        return new RotatingButtonPageMobile();
+    }
+
+    public RadioButtonPageMobile clickRadioButtonElement() {
+        radioGroupElement.click();
+        return new RadioButtonPageMobile();
+    }
+
+    public PopUpMenuPageMobile clickPopupMobilePage() {
+        popupMenuElement.click();
+        return new PopUpMenuPageMobile();
+    }
+    public PickerPageMobile clickPickerElement() {
+        pickerElement.click();
+        return new PickerPageMobile();
+    }
+
     public ContentByIntentPageMobile clickContentByIntent() {
         contentByIntent.click();
         return new ContentByIntentPageMobile();

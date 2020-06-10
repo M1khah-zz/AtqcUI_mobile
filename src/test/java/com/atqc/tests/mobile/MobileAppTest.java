@@ -3,19 +3,19 @@ package com.atqc.tests.mobile;
 import com.atqc.tests.BaseTest;
 import framework.PlatformFactory;
 import framework.Utilities;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.*;
 import io.appium.java_client.touch.offset.PointOption;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 import pages.TabsPageMobile;
 import pages.mobile.*;
 
-import java.util.List;
+import java.util.Date;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.not;
@@ -39,6 +39,14 @@ public class MobileAppTest extends BaseTest {
     AnimationMenuPageMobile animationPageMenu;
     TabsPageMobile tabsPage;
     ContentByIntentPageMobile contentByIntentPage;
+    PickerPageMobile pickerPage;
+    PopUpMenuPageMobile popUpMenuPage;
+    RadioButtonPageMobile radioGroupPage;
+    RotatingButtonPageMobile rotatingButtonPage;
+    TextClockPageMobile textClockPage;
+    DateWidgetPageMobile dateWidgetPage;
+    DialogDateWidgetPageMobile dialogDateWidgetPage;
+    SpinnerWidgetPageMobile spinnerPage;
 
 
     @Test
@@ -162,9 +170,7 @@ public class MobileAppTest extends BaseTest {
     @Test
     public void contentByIntentTest(){
         viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
-        Utilities.scrollUp();
-        Utilities.scrollUp();
-        Utilities.scrollUp();
+        IntStream.range(0, 3).forEach(i -> Utilities.scrollUp());
         tabsPage = viewsPageMobile.clickTabsElement();
         contentByIntentPage = tabsPage.clickContentByIntent();
 
@@ -180,8 +186,95 @@ public class MobileAppTest extends BaseTest {
 
     @Test
     public void pickerTest(){
-        
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        IntStream.range(0, 2).forEach(i -> Utilities.scrollUp());
+        pickerPage = viewsPageMobile.clickPickerElement();
+
+        Utilities.scrollUp();
+
+        assertThat(pickerPage.selectedValueText, equalTo("Value: kupima"));
+
     }
+
+    @Test
+    public void popUpMenuTest(){
+
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        IntStream.range(0, 2).forEach(i -> Utilities.scrollUp());
+        popUpMenuPage = viewsPageMobile.clickPopupMobilePage();
+
+        popUpMenuPage.clickPopUpButton();
+        popUpMenuPage.clickWidgetButton();
+
+        assertThat(popUpMenuPage.toastText, containsString("Add"));
+    }
+
+    @Test
+    public void radioButtonTest(){
+
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        IntStream.range(0, 3).forEach(i -> Utilities.scrollUp());
+        radioGroupPage = viewsPageMobile.clickRadioButtonElement();
+
+        radioGroupPage.clickAllButton();
+        radioGroupPage.clickClearAll();
+
+        assertThat(radioGroupPage.resultTextBefore, is(not(radioGroupPage.resultTextAfter)));
+    }
+
+    @Test
+    public void rotatingButtonTest(){
+
+        viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+        IntStream.range(0, 3).forEach(i -> Utilities.scrollUp());
+        rotatingButtonPage = viewsPageMobile.clickRotatingButtonElement();
+
+        Point locationBefore = rotatingButtonPage.rotatingButton.getLocation();
+        Dimension sizeBefore = rotatingButtonPage.rotatingButton.getSize();
+        Rectangle rectBefore = rotatingButtonPage.rotatingButton.getRect();
+        rotatingButtonPage.translationXBar.sendKeys("200");
+        rotatingButtonPage.scaleYBar.sendKeys("200");
+        rotatingButtonPage.rotationZBar.sendKeys("200");
+        Point locationAfter = rotatingButtonPage.rotatingButton.getLocation();
+        Dimension sizeAfter = rotatingButtonPage.rotatingButton.getSize();
+        Rectangle rectAfter = rotatingButtonPage.rotatingButton.getRect();
+
+        assertThat(locationAfter, is(not(equalTo(locationBefore))));
+        assertThat(sizeAfter, is(not(equalTo(sizeBefore))));
+        assertThat(rectAfter, is(not(equalTo(rectBefore))));
+
+    }
+
+  @Test
+  public void textClockTest(){
+
+      viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+      IntStream.range(0, 4).forEach(i -> Utilities.scrollUp());
+      textClockPage = viewsPageMobile.clickTextClockElement();
+
+      assertThat(textClockPage.HHMMFormat, equalTo(textClockPage.HHMM.format(new Date())));
+      assertThat(textClockPage.mmDDYYFormat, equalTo(textClockPage.mmDDYY.format(new Date())));
+      assertThat(textClockPage.mmDDYYHHMMFormat, equalTo(textClockPage.mmDDYYHHMM.format(new Date())));
+      assertThat(textClockPage.hhMMSSFormat,equalTo(textClockPage.hhMMSS.format(new Date())));
+  }
+
+  @Test
+  public void dateWidgetTest(){
+      viewsPageMobile = new APIDemoPageMobile().clickOnViewsElement();
+      dateWidgetPage = viewsPageMobile.clickDateWidgetsPage();
+      dialogDateWidgetPage = dateWidgetPage.clickDialogButton();
+
+      String displayedDateTimeTextText = dialogDateWidgetPage.displayedDateTime.getText();
+      String dateBeforeChange = displayedDateTimeTextText;
+
+      dialogDateWidgetPage.clickChangeButton();
+      dialogDateWidgetPage.clickYearPickerButton();
+      dialogDateWidgetPage.clickYear();
+      dialogDateWidgetPage.clickNextMonthButton();
+      dialogDateWidgetPage.clickDayOfMonth();
+      dialogDateWidgetPage.clickOkButtonInPicker();
+      assertThat(dialogDateWidgetPage.dateAfterChange, is(not(equalTo(dialogDateWidgetPage.dateBeforeChange))));
+  }
 }
 
 
